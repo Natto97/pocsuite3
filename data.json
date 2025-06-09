@@ -482,7 +482,8 @@
         "drupal7_geddon2.py": "2025-01-25 17:58:12",
         "http_request_smuggling.py": "2025-01-25 17:58:12",
         "shiro_key_brute.py": "2025-01-25 17:58:12",
-        "shiziyuCMS_sqli.py": "2025-01-25 17:58:12"
+        "shiziyuCMS_sqli.py": "2025-01-25 17:58:12",
+        "20251974_ingress_nightmare.py": "2025-06-09 08:09:43"
     },
     "https://github.com/A11an10/poc": {
         "apache_ofbiz_cve20209496_poc.py": "2025-01-25 17:58:18",
