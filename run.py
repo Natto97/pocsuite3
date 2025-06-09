@@ -8,7 +8,7 @@ from github import Github
 GITHUB_TOKEN = os.getenv("GH_TOKEN", "")
 
 # 本地目录设置
-DATA_DIR = "DATA"
+DATA_DIR = "poc"
 POC_DIR = "poc"
 
 # 初始化GitHub API
@@ -29,16 +29,6 @@ def calculate_md5(file_path):
         for byte_block in iter(lambda: f.read(4096), b""):
             md5_hash.update(byte_block)
     return md5_hash.hexdigest()
-
-# 自动创建目录（如果不存在）
-def create_dir(dir_path):
-    if not os.path.exists(dir_path):
-        os.makedirs(dir_path)
-        print(f"Created directory: {dir_path}")
-
-# 创建 DATA_DIR 和 POC_DIR 目录
-create_dir(DATA_DIR)
-create_dir(POC_DIR)
 
 # 克隆项目并查找符合条件的文件
 for repo in repos:
@@ -71,9 +61,7 @@ for repo in repos:
                     content = f.read()
                     if "pocsuite3.api" in content:
                         # 移动文件到poc目录
-                        target_dir = os.path.join(POC_DIR, repo_name.split("/")[-1])
-                        create_dir(target_dir)  # 创建对应的目录
-                        target_path = os.path.join(target_dir, file)
+                        target_path = os.path.join(POC_DIR, file)
                         
                         print(f"Moving file {file_path} to {target_path}")
                         shutil.move(file_path, target_path)
