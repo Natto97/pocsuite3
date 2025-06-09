@@ -17,6 +17,7 @@ g = Github(GITHUB_TOKEN)
 # 搜索包含"pocsuite3.api"的Python项目
 search_query = 'pocsuite3.api language:Python'
 repos = g.search_repositories(search_query)
+print(repos)
 
 # 用来保存已经处理的文件的MD5哈希值，防止重复
 processed_files_md5 = set()
